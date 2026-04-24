@@ -1,251 +1,209 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Pesa Tracker | Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary: #2ecc71;
-            --dark: #2c3e50;
-            --light-bg: #f4f7f6;
-            --text-muted: #7f8c8d;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
-            margin: 0;
-            display: flex;
-        }
+<meta charset="UTF-8">
+<title>Pesa Tracker | Dashboard</title>
 
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 260px;
-            background: var(--dark);
-            color: white;
-            height: 100vh;
-            padding: 30px 20px;
-            position: fixed;
-        }
-        .sidebar h2 {
-            color: var(--primary);
-            margin-bottom: 40px;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-        }
-        .user-info {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #3e4f5f;
-        }
-        .nav-links a {
-            display: block;
-            color: #bdc3c7;
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 5px;
-            transition: 0.3s;
-            margin-bottom: 5px;
-        }
-        .nav-links a:hover, .nav-links a.active {
-            background: #34495e;
-            color: white;
-        }
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        /* Main Workspace */
-        .main-content {
-            margin-left: 260px;
-            padding: 40px;
-            width: calc(100% - 260px);
-        }
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .btn-add {
-            background: var(--primary);
-            color: white;
-            padding: 10px 25px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-add:hover { background: #27ae60; }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-        /* KPI Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-        .stat-card h4 { margin: 0; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
-        .stat-card .value { font-size: 2rem; font-weight: bold; margin: 10px 0 0; color: var(--dark); }
+<style>
+body { font-family: 'Inter', sans-serif; }
 
-        /* Dashboard Layout (Chart + Table) */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 25px;
-            align-items: start;
-        }
-        .content-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-        .content-card h3 { margin-top: 0; margin-bottom: 20px; font-size: 1.1rem; }
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
 
-        /* Table Styling */
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; color: var(--text-muted); border-bottom: 2px solid #f4f7f6; font-size: 0.9rem; }
-        td { padding: 15px 12px; border-bottom: 1px solid #f4f7f6; font-size: 0.95rem; }
-
-        .badge {
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        .bg-business { background: #e3f2fd; color: #1976d2; }
-        .bg-personal { background: #e8f5e9; color: #2e7d32; }
-    </style>
+.float {
+    animation: float 6s ease-in-out infinite;
+}
+</style>
 </head>
-<body>
 
-    <aside class="sidebar">
-        <h2>PesaTracker</h2>
-        <div class="user-info">
-            <small style="color: var(--text-muted)">Logged in as</small><br>
-            <strong>${sessionScope.user.username}</strong>
+<body class="bg-gradient-to-br from-black via-gray-900 to-black text-gray-200">
+
+<!-- SIDEBAR -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-white/5 backdrop-blur-lg border-r border-white/10 p-6">
+
+    <h2 class="text-2xl font-bold text-yellow-400 mb-8">PesaTracker</h2>
+
+    <div class="mb-8">
+        <p class="text-gray-400 text-sm">Logged in as</p>
+        <p class="font-semibold text-white">${sessionScope.user.username}</p>
+    </div>
+
+    <nav class="space-y-3">
+        <a href="<c:url value='/expenses/dashboard'/>"
+           class="block px-3 py-2 rounded-lg bg-yellow-400 text-black font-semibold">
+           Dashboard
+        </a>
+
+        <a href="<c:url value='/expenses/add'/>"
+           class="block px-3 py-2 rounded-lg hover:bg-white/10 transition">
+           Add Expense
+        </a>
+
+        <a href="<c:url value='/expenses/report'/>"
+           class="block px-3 py-2 rounded-lg hover:bg-white/10 transition">
+           Reports
+        </a>
+
+        <a href="<c:url value='/auth/logout'/>"
+           class="block mt-10 text-red-400 hover:text-red-300">
+           Sign Out
+        </a>
+    </nav>
+
+</aside>
+
+<!-- MAIN -->
+<main class="ml-64 p-10">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-10">
+        <h1 class="text-3xl font-bold text-white">Dashboard</h1>
+
+        <a href="<c:url value='/expenses/add'/>"
+           class="bg-yellow-400 text-black px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition">
+           + New Expense
+        </a>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+        <div class="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl float">
+            <p class="text-gray-400 text-sm">Total Expenditure</p>
+            <h2 class="text-3xl font-bold text-yellow-400 mt-2">
+                <fmt:formatNumber value="${totalSpending}" type="currency" currencySymbol="$"/>
+            </h2>
         </div>
-        <nav class="nav-links">
-            <a href="<c:url value='/expenses/dashboard'/>"class="active">Dashboard</a>
-            <a href="<c:url value='/expenses/add'/>">Add Expense</a>
-            <a href="<c:url value='/expenses/report'/>">Reports</a>
-            <a href="<c:url value='/auth/logout'/>" style="margin-top: 50px; color: #e74c3c;">Sign Out</a>
-        </nav>
-    </aside>
 
-    <main class="main-content">
-        <div class="top-bar">
-            <h1>Dashboard</h1>
-            <a href="<c:url value='/expenses/add'/>" class="btn-add">+ New Expense</a>
+        <div class="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl float">
+            <p class="text-gray-400 text-sm">Transactions</p>
+            <h2 class="text-3xl font-bold text-white mt-2">${expenses.size()}</h2>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h4>Total Expenditure</h4>
-                <div class="value">
-                    <fmt:formatNumber value="${totalSpending}" type="currency" currencySymbol="$"/>
-                </div>
+    </div>
+
+    <!-- CONTENT GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- TABLE -->
+        <div class="lg:col-span-2 bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl">
+
+            <h3 class="text-xl font-semibold mb-4 text-white">Recent Transactions</h3>
+
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+
+                <thead class="text-gray-400 border-b border-white/10">
+                    <tr>
+                        <th class="text-left py-3">Date</th>
+                        <th class="text-left">Description</th>
+                        <th class="text-left">Category</th>
+                        <th class="text-left">Type</th>
+                        <th class="text-left">Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <c:forEach var="exp" items="${expenses}">
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition">
+
+                        <td class="py-4">${exp.date}</td>
+
+                        <td>
+                            ${exp.description}<br>
+                            <span class="text-gray-500 text-xs">
+                                <c:choose>
+                                    <c:when test="${exp['class'].simpleName == 'BusinessExpense'}">
+                                        Corp: ${exp.companyName}
+                                    </c:when>
+                                    <c:otherwise>
+                                        Occasion: ${exp.occasion}
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </td>
+
+                        <td>${exp.category.name}</td>
+
+                        <td>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                ${exp['class'].simpleName == 'BusinessExpense'
+                                ? 'bg-blue-500/20 text-blue-300'
+                                : 'bg-green-500/20 text-green-300'}">
+                                ${exp['class'].simpleName == 'BusinessExpense' ? 'Business' : 'Personal'}
+                            </span>
+                        </td>
+
+                        <td class="text-yellow-400 font-bold">
+                            <fmt:formatNumber value="${exp.amount}" type="currency" currencySymbol="$"/>
+                        </td>
+
+                    </tr>
+                </c:forEach>
+                </tbody>
+
+            </table>
             </div>
-            <div class="stat-card">
-                <h4>Transaction Count</h4>
-                <div class="value">${expenses.size()}</div>
-            </div>
+
         </div>
 
-        <div class="dashboard-grid">
-            <div class="content-card">
-                <h3>Recent Transactions</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Category</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="exp" items="${expenses}">
-                            <tr>
-                                <td>${exp.date}</td>
-                                <td>
-                                    ${exp.description}<br>
-                                    <small style="color: var(--text-muted)">
-                                        <c:choose>
-                                            <c:when test="${exp['class'].simpleName == 'BusinessExpense'}">
-                                                Corp: ${exp.companyName}
-                                            </c:when>
-                                            <c:otherwise>
-                                                Occasion: ${exp.occasion}
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </small>
-                                </td>
-                                <td>${exp.category.name}</td>
-                                <td>
-                                    <span class="badge ${exp['class'].simpleName == 'BusinessExpense' ? 'bg-business' : 'bg-personal'}">
-                                        ${exp['class'].simpleName == 'BusinessExpense' ? 'Business' : 'Personal'}
-                                    </span>
-                                </td>
-                                <td style="font-weight: bold; color: var(--dark);">
-                                    <fmt:formatNumber value="${exp.amount}" type="currency" currencySymbol="$"/>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </div>
+        <!-- CHART -->
+        <div class="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-2xl float">
 
-            <div class="content-card">
-                <h3>Spending by Category</h3>
-                <canvas id="categoryChart" width="100" height="100"></canvas>
-            </div>
+            <h3 class="text-xl font-semibold mb-4 text-white">Spending by Category</h3>
+
+            <canvas id="categoryChart"></canvas>
+
         </div>
-    </main>
 
-    <script>
-        // Data Extraction from Backend Map
-        const chartLabels = [];
-        const chartValues = [];
+    </div>
 
-        <c:forEach var="entry" items="${chartData}">
-            chartLabels.push("${entry.key}");
-            chartValues.push(${entry.value});
-        </c:forEach>
+</main>
 
-        // Initialize Chart.js
-        const ctx = document.getElementById('categoryChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    data: chartValues,
-                    backgroundColor: [
-                        '#2ecc71', '#3498db', '#9b59b6', '#f1c40f', '#e67e22', '#e74c3c', '#1abc9c'
-                    ],
-                    hoverOffset: 10,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { padding: 20, usePointStyle: true }
-                    }
-                }
+<!-- CHART SCRIPT -->
+<script>
+const chartLabels = [];
+const chartValues = [];
+
+<c:forEach var="entry" items="${chartData}">
+chartLabels.push("${entry.key}");
+chartValues.push(${entry.value});
+</c:forEach>
+
+new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            data: chartValues,
+            backgroundColor: [
+                '#facc15', '#eab308', '#ca8a04', '#fde047', '#d4af37'
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: '#ccc' }
             }
-        });
-    </script>
+        }
+    }
+});
+</script>
+
 </body>
 </html>

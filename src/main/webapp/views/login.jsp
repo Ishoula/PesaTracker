@@ -1,49 +1,91 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Pesa Tracker - Login</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { color: #2c3e50; text-align: center; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; color: #666; }
-        input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 0.75rem; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
-        button:hover { background-color: #2980b9; }
-        .error { color: #e74c3c; background: #fadbd8; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem; text-align: center; }
-        .msg { color: #27ae60; background: #d4efdf; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem; text-align: center; }
-        .footer { text-align: center; margin-top: 1rem; font-size: 0.9rem; }
-    </style>
+<meta charset="UTF-8">
+<title>Pesa Tracker - Login</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* subtle float animation */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.float {
+    animation: float 6s ease-in-out infinite;
+}
+</style>
 </head>
-<body>
-    <div class="login-card">
-        <h2>Pesa Tracker</h2>
 
-        <%-- Displaying messages from Controller --%>
-        <% if (request.getAttribute("error") != null) { %>
-            <div class="error"><%= request.getAttribute("error") %></div>
-        <% } %>
-        <% if (request.getParameter("msg") != null && request.getParameter("msg").equals("registered")) { %>
-            <div class="msg">Registration successful! Please login.</div>
-        <% } %>
+<body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen flex items-center justify-center text-gray-200">
 
-        <form action="<c:url value='/auth/login'/>" method="POST">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" name="username" required>
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" required>
-            </div>
-            <button type="submit">Sign In</button>
-        </form>
+<!-- BACKGROUND GLOW -->
+<div class="absolute w-[400px] h-[400px] bg-yellow-500/20 blur-3xl rounded-full top-10 left-10"></div>
+<div class="absolute w-[300px] h-[300px] bg-yellow-500/10 blur-3xl rounded-full bottom-10 right-10"></div>
 
-        <div class="footer">
-            Don&apos;t have an account? <a href="<c:url value='/auth/register'/>">Register here</a>
+<!-- LOGIN CARD -->
+<div class="relative w-full max-w-md p-8 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-2xl float">
+
+    <h2 class="text-3xl font-bold text-center text-white mb-6">
+        PesaTracker
+    </h2>
+
+    <!-- ERROR MESSAGE -->
+    <c:if test="${not empty error}">
+        <div class="bg-red-500/20 text-red-300 p-3 rounded-lg mb-4 text-center">
+            ${error}
         </div>
+    </c:if>
+
+    <!-- SUCCESS MESSAGE -->
+    <c:if test="${param.msg == 'registered'}">
+        <div class="bg-green-500/20 text-green-300 p-3 rounded-lg mb-4 text-center">
+            Registration successful! Please login.
+        </div>
+    </c:if>
+
+    <!-- FORM -->
+    <form action="<c:url value='/auth/login'/>" method="POST" class="space-y-4">
+
+        <div>
+            <label class="text-sm text-gray-400">Username</label>
+            <input type="text" name="username" required
+                   class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 outline-none text-white">
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-400">Password</label>
+            <input type="password" name="password" required
+                   class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 outline-none text-white">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-yellow-400 text-black font-semibold py-3 rounded-lg hover:bg-yellow-300 transition shadow-lg">
+            Sign In
+        </button>
+    </form>
+
+    <!-- FOOTER -->
+    <div class="text-center mt-6 text-sm text-gray-400">
+        Don&apos;t have an account?
+        <a href="<c:url value='/auth/register'/>" class="text-yellow-400 hover:underline">
+            Register here
+        </a>
     </div>
+
+</div>
+
 </body>
 </html>

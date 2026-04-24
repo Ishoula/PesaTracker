@@ -1,54 +1,89 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Add Expense | Pesa Tracker</title>
-    <style>
-        :root { --primary: #2ecc71; --dark: #2c3e50; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .form-card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark); }
-        input, select, textarea { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        .type-toggle { display: flex; gap: 10px; margin-bottom: 1.5rem; }
-        .type-toggle label { flex: 1; text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .type-toggle input { display: none; }
-        .type-toggle input:checked + span { background: var(--primary); color: white; display: block; width: 100%; margin: -10px; padding: 10px; border-radius: 5px; }
-        .hidden { display: none; }
-        .btn-submit { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-back { display: block; text-align: center; margin-top: 1rem; color: #7f8c8d; text-decoration: none; }
-    </style>
+<meta charset="UTF-8">
+<title>Add Expense | Pesa Tracker</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Inter', sans-serif; }
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.float {
+    animation: float 6s ease-in-out infinite;
+}
+</style>
 </head>
-<body>
 
-<div class="form-card">
-    <h2 style="text-align: center; margin-top: 0;">Record New Expense</h2>
+<body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen flex items-center justify-center text-gray-200">
 
-    <form action="<c:url value='/expenses/save'/>" method="POST">
+<!-- BACKGROUND GLOW -->
+<div class="absolute w-[400px] h-[400px] bg-yellow-500/20 blur-3xl rounded-full top-10 left-10"></div>
+<div class="absolute w-[300px] h-[300px] bg-yellow-500/10 blur-3xl rounded-full bottom-10 right-10"></div>
 
-        <div class="form-group">
-            <label>Expense Type</label>
-            <div class="type-toggle">
-                <label>
-                    <input type="radio" name="expenseType" value="PERSONAL" checked onclick="toggleFields('PERSONAL')">
-                    <span>Personal</span>
+<!-- FORM CARD -->
+<div class="relative w-full max-w-xl p-8 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-2xl float">
+
+    <h2 class="text-3xl font-bold text-center text-white mb-6">
+        Record New Expense
+    </h2>
+
+    <form action="<c:url value='/expenses/save'/>" method="POST" class="space-y-5">
+
+        <!-- TYPE TOGGLE -->
+        <div>
+            <label class="text-sm text-gray-400">Expense Type</label>
+
+            <div class="grid grid-cols-2 gap-3 mt-2">
+
+                <label class="cursor-pointer">
+                    <input type="radio" name="expenseType" value="PERSONAL"
+                           checked onclick="toggleFields('PERSONAL')" class="hidden peer">
+
+                    <div class="text-center py-2 rounded-lg border border-gray-700 peer-checked:bg-yellow-400 peer-checked:text-black">
+                        Personal
+                    </div>
                 </label>
-                <label>
-                    <input type="radio" name="expenseType" value="BUSINESS" onclick="toggleFields('BUSINESS')">
-                    <span>Business</span>
+
+                <label class="cursor-pointer">
+                    <input type="radio" name="expenseType" value="BUSINESS"
+                           onclick="toggleFields('BUSINESS')" class="hidden peer">
+
+                    <div class="text-center py-2 rounded-lg border border-gray-700 peer-checked:bg-yellow-400 peer-checked:text-black">
+                        Business
+                    </div>
                 </label>
+
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Amount</label>
-            <input type="number" step="0.01" name="amount" required placeholder="0.00">
+        <!-- AMOUNT -->
+        <div>
+            <label class="text-sm text-gray-400">Amount</label>
+            <input type="number" step="0.01" name="amount" required
+                   class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 text-white outline-none"
+                   placeholder="0.00">
         </div>
 
-        <div class="form-group">
-            <label>Category</label>
-            <input type="text" name="categoryName" list="categoryOptions" required placeholder="Type or select a category...">
+        <!-- CATEGORY -->
+        <div>
+            <label class="text-sm text-gray-400">Category</label>
+
+            <input type="text" name="categoryName" list="categoryOptions" required
+                   class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 text-white outline-none"
+                   placeholder="Select category">
+
             <datalist id="categoryOptions">
                 <c:forEach var="cat" items="${categories}">
                     <option value="${cat.name}">
@@ -56,50 +91,74 @@
             </datalist>
         </div>
 
-        <div class="form-group">
-            <label>Date</label>
-            <input type="date" name="date" required id="expenseDate">
+        <!-- DATE -->
+        <div>
+            <label class="text-sm text-gray-400">Date</label>
+            <input type="date" id="expenseDate" name="date" required
+                   class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 text-white outline-none">
         </div>
 
-        <div id="personalFields" class="form-group">
-            <label>Occasion</label>
-            <input type="text" name="occasion" placeholder="e.g. Birthday, Vacation">
+        <!-- PERSONAL -->
+        <div id="personalFields">
+            <label class="text-sm text-gray-400">Occasion</label>
+            <input type="text" name="occasion"
+                   class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 text-white outline-none"
+                   placeholder="Birthday, Vacation...">
         </div>
 
-        <div id="businessFields" class="form-group hidden">
-            <label>Company Name</label>
-            <input type="text" name="companyName" placeholder="e.g. Acme Corp">
-            <label style="margin-top:10px">Tax ID / Reference</label>
-            <input type="text" name="taxId" placeholder="TAX-12345">
+        <!-- BUSINESS -->
+        <div id="businessFields" class="hidden space-y-3">
+            <div>
+                <label class="text-sm text-gray-400">Company Name</label>
+                <input type="text" name="companyName"
+                       class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 text-white outline-none"
+                       placeholder="Acme Corp">
+            </div>
+
+            <div>
+                <label class="text-sm text-gray-400">Tax ID</label>
+                <input type="text" name="taxId"
+                       class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 text-white outline-none"
+                       placeholder="TAX-12345">
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Description</label>
-            <textarea name="description" rows="2"></textarea>
+        <!-- DESCRIPTION -->
+        <div>
+            <label class="text-sm text-gray-400">Description</label>
+            <textarea name="description" rows="2"
+                      class="w-full mt-1 p-3 rounded-lg bg-black/40 border border-gray-700 focus:border-yellow-400 text-white outline-none"></textarea>
         </div>
 
-        <button type="submit" class="btn-submit">Save Expense</button>
-        <a href="<c:url value='/expenses/dashboard'/>"class="btn-back">Cancel</a>
+        <!-- BUTTONS -->
+        <button type="submit"
+                class="w-full bg-yellow-400 text-black font-semibold py-3 rounded-lg hover:bg-yellow-300 transition shadow-lg">
+            Save Expense
+        </button>
+
+        <a href="<c:url value='/expenses/dashboard'/>"
+           class="block text-center text-gray-400 hover:text-yellow-400 mt-3">
+            Cancel
+        </a>
+
     </form>
 </div>
 
 <script>
-    // Set default date to today
-    document.getElementById('expenseDate').valueAsDate = new Date();
+document.getElementById('expenseDate').valueAsDate = new Date();
 
-    // Toggle specific fields based on selection
-    function toggleFields(type) {
-        const personal = document.getElementById('personalFields');
-        const business = document.getElementById('businessFields');
+function toggleFields(type) {
+    const personal = document.getElementById('personalFields');
+    const business = document.getElementById('businessFields');
 
-        if (type === 'BUSINESS') {
-            personal.classList.add('hidden');
-            business.classList.remove('hidden');
-        } else {
-            personal.classList.remove('hidden');
-            business.classList.add('hidden');
-        }
+    if (type === 'BUSINESS') {
+        personal.classList.add('hidden');
+        business.classList.remove('hidden');
+    } else {
+        personal.classList.remove('hidden');
+        business.classList.add('hidden');
     }
+}
 </script>
 
 </body>
