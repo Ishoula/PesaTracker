@@ -6,6 +6,7 @@ import repository.ExpenseRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ExpenseService {
@@ -16,69 +17,85 @@ public class ExpenseService {
         this.expenseRepository = new ExpenseRepository();
     }
 
-    /**
-     * FR2: Adds a Personal Expense
-     */
-    public void addPersonalExpense(Double amount, LocalDate date, String desc, Category cat, String occasion) {
+    public void addPersonalExpense(User user, Double amount, LocalDate date, String desc,
+                                   Category cat, Currency currency, Set<Tag> tags, String occasion) {
         PersonalExpense pe = new PersonalExpense();
+        pe.setUser(user);
         pe.setAmount(amount);
         pe.setDate(date);
         pe.setDescription(desc);
         pe.setCategory(cat);
+        pe.setCurrency(currency);
+        if (tags != null) {
+            pe.setTags(tags);
+        }
         pe.setOccasion(occasion);
         expenseRepository.save(pe);
     }
 
-    /**
-     * FR2: Adds a Business Expense
-     */
-    public void addBusinessExpense(Double amount, LocalDate date, String desc, Category cat, String comp, String taxId) {
+    public void addBusinessExpense(User user, Double amount, LocalDate date, String desc,
+                                   Category cat, Currency currency, Set<Tag> tags,
+                                   String comp, String taxId) {
         BusinessExpense be = new BusinessExpense();
+        be.setUser(user);
         be.setAmount(amount);
         be.setDate(date);
         be.setDescription(desc);
         be.setCategory(cat);
+        be.setCurrency(currency);
+        if (tags != null) {
+            be.setTags(tags);
+        }
         be.setCompanyName(comp);
         be.setTaxId(taxId);
         expenseRepository.save(be);
     }
 
-    /**
-     * FR7: Filtering logic using Java Streams (Post-Cache)
-     */
-    public List<Expense> getExpensesByDateRange(LocalDate start, LocalDate end) {
-        return expenseRepository.findAll().stream()
-                .filter(e -> !e.getDate().isBefore(start) && !e.getDate().isAfter(end))
-                .collect(Collectors.toList());
+    public List<Expense> getExpensesByUser(Long userId) {
+        return expenseRepository.findByUserId(userId);
     }
 
-    /**
-     * FR5: Monthly Total Calculation
-     */
-    public double getTotalSpendingForMonth(int month, int year) {
-        return expenseRepository.findAll().stream()
-                .filter(e -> e.getDate().getMonthValue() == month && e.getDate().getYear() == year)
-                .mapToDouble(Expense::getAmount)
-                .sum();
+    public List<Expense> getExpensesByDateRange(Long userId, LocalDate start, LocalDate end) {
+        return expenseRepository.findByUserIdAndDateRange(userId, start, end);
     }
 
-    /**
-     * FR6: Data Visualization Helper
-     * Transforms raw data into a Map for JFreeChart Pie Charts
-     */
-    public Map<String, Double> getCategoryDataForChart() {
-        List<Object[]> rawData = expenseRepository.getExpenseSummaryByCategory();
+    public List<Expense> getExpensesByCategory(Long userId, Long categoryId) {
+        return expenseRepository.findByUserIdAndCategory(userId, categoryId);
+    }
+
+    public List<Expense> searchExpenses(Long userId, String keyword) {
+        return expenseRepository.searchByUserIdAndKeyword(userId, keyword);
+    }
+
+    public List<Expense> filterByAmountRange(Long userId, Double min, Double max) {
+        return expenseRepository.findByUserIdAndAmountRange(userId, min, max);
+    }
+
+    public double getTotalSpendingForMonth(Long userId, int month, int year) {
+        return expenseRepository.getTotalSpendingForMonth(userId, month, year);
+    }
+
+    public Map<String, Double> getCategoryDataForChart(Long userId) {
+        List<Object[]> rawData = expenseRepository.getExpenseSummaryByCategory(userId);
         return rawData.stream().collect(Collectors.toMap(
-                row -> (String) row[0], // Category Name
-                row -> (Double) row[1]  // Sum of Amount
+                row -> (String) row[0],
+                row -> (Double) row[1]
         ));
     }
 
-    public List<Expense> getAllExpenses() {
-        return expenseRepository.findAll();
+    public List<Expense> getAllExpenses(Long userId) {
+        return expenseRepository.findByUserId(userId);
+    }
+
+    public Expense getExpenseById(Long id) {
+        return expenseRepository.findById(id);
     }
 
     public void deleteExpense(Long id) {
         expenseRepository.delete(id);
+    }
+
+    public void updateExpense(Expense expense) {
+        expenseRepository.update(expense);
     }
 }

@@ -16,6 +16,12 @@ public class HibernateUtil {
              configuration.addAnnotatedClass(Expense.class);
              configuration.addAnnotatedClass(PersonalExpense.class);
              configuration.addAnnotatedClass(BusinessExpense.class);
+             configuration.addAnnotatedClass(Budget.class);
+             configuration.addAnnotatedClass(Tag.class);
+             configuration.addAnnotatedClass(Currency.class);
+             configuration.addAnnotatedClass(Receipt.class);
+             configuration.addAnnotatedClass(RecurringExpense.class);
+             configuration.addAnnotatedClass(Notification.class);
 
             sessionFactory= configuration.buildSessionFactory();
         }
