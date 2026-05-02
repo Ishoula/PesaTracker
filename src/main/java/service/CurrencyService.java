@@ -52,6 +52,10 @@ public class CurrencyService {
         return currencyRepository.findByCode(code).orElse(getDefaultCurrency());
     }
 
+    public Currency getCurrencyById(Long id) {
+        return currencyRepository.findById(id);
+    }
+
     public double convertToUsd(double amount, Currency from) {
         return amount * from.getExchangeRateToUsd();
     }

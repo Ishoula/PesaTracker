@@ -8,6 +8,7 @@ import util.HibernateUtil;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public class ExpenseRepository {
 
@@ -15,11 +16,24 @@ public class ExpenseRepository {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
+            // Debug: log tags being saved
+            System.out.println("DEBUG: Saving expense with " + (expense.getTags() != null ? expense.getTags().size() : 0) + " tags");
+            // Merge detached tags to attach them to current session
+            if (expense.getTags() != null && !expense.getTags().isEmpty()) {
+                Set<Tag> mergedTags = new java.util.HashSet<>();
+                for (Tag tag : expense.getTags()) {
+                    System.out.println("DEBUG: Merging tag id=" + tag.getId() + ", name=" + tag.getName());
+                    mergedTags.add(session.merge(tag));
+                }
+                expense.setTags(mergedTags);
+            }
             session.persist(expense);
             transaction.commit();
+            System.out.println("DEBUG: Expense saved successfully with id=" + expense.getId());
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
+            System.err.println("ERROR saving expense: " + e.getMessage());
         }
     }
 
@@ -168,8 +182,10 @@ public class ExpenseRepository {
 
     public List<Object[]> getWeeklyComparison(Long userId, int month, int year) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT FUNCTION('week', e.date), SUM(e.amount) FROM Expense e WHERE e.user.id = :userId AND MONTH(e.date) = :month AND YEAR(e.date) = :year GROUP BY FUNCTION('week', e.date) ORDER BY FUNCTION('week', e.date)";
-            return session.createQuery(hql, Object[].class)
+            String sql = "SELECT EXTRACT(WEEK FROM e.date), SUM(e.amount) FROM expenses e " +
+                        "WHERE e.user_id = :userId AND EXTRACT(MONTH FROM e.date) = :month AND EXTRACT(YEAR FROM e.date) = :year " +
+                        "GROUP BY EXTRACT(WEEK FROM e.date) ORDER BY EXTRACT(WEEK FROM e.date)";
+            return session.createNativeQuery(sql, Object[].class)
                     .setParameter("userId", userId)
                     .setParameter("month", month)
                     .setParameter("year", year)

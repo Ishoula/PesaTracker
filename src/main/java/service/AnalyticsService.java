@@ -6,6 +6,7 @@ import repository.ExpenseRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,9 @@ public class AnalyticsService {
         List<Object[]> weeklyData = expenseRepository.getWeeklyComparison(userId, month, year);
         Map<Integer, Double> weeklySpending = new LinkedHashMap<>();
         for (Object[] row : weeklyData) {
-            weeklySpending.put((Integer) row[0], (Double) row[1]);
+            Number weekNum = (Number) row[0];
+            Number amount = (Number) row[1];
+            weeklySpending.put(weekNum.intValue(), amount.doubleValue());
         }
 
         LocalDate firstDay = LocalDate.of(year, month, 1);
@@ -92,10 +95,11 @@ public class AnalyticsService {
 
         result.put("monthlyTrends", monthlyTrends);
 
-        if (monthlyTrends.size() >= 2) {
-            double lastMonth = (Double) monthlyTrends.get(monthlyTrends.size() - 1).get("total");
-            double prevMonth = (Double) monthlyTrends.get(monthlyTrends.size() - 2).get("total");
-            double change = prevMonth > 0 ? ((lastMonth - prevMonth) / prevMonth) * 100 : 0;
+        if (monthlyTrends.size() >= 3) {
+            // Compare last two COMPLETE months (exclude current incomplete month)
+            double lastCompleteMonth = (Double) monthlyTrends.get(monthlyTrends.size() - 2).get("total");
+            double prevCompleteMonth = (Double) monthlyTrends.get(monthlyTrends.size() - 3).get("total");
+            double change = prevCompleteMonth > 0 ? ((lastCompleteMonth - prevCompleteMonth) / prevCompleteMonth) * 100 : 0;
             result.put("monthOverMonthChange", change);
         }
 
@@ -150,13 +154,12 @@ public class AnalyticsService {
         LocalDate firstDay = LocalDate.of(year, month, 1);
         int daysInMonth = firstDay.lengthOfMonth();
 
-        LocalDate startOfCalendar = firstDay.withDayOfWeek(DayOfWeek.SUNDAY.getValue());
-        if (startOfCalendar.isAfter(firstDay)) {
+        LocalDate startOfCalendar = firstDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));        if (startOfCalendar.isAfter(firstDay)) {
             startOfCalendar = startOfCalendar.minusWeeks(1);
         }
 
         LocalDate endOfCalendar = firstDay.withDayOfMonth(daysInMonth)
-                .withDayOfWeek(DayOfWeek.SATURDAY.getValue());
+                .with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
 
         LocalDate current = startOfCalendar;
         List<Object[]> dailySpending = expenseRepository.getDailySpendingForMonth(userId, month, year);

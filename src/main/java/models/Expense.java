@@ -39,7 +39,7 @@ public abstract class Expense implements Serializable {
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
         name = "expense_tags",
         joinColumns = @JoinColumn(name = "expense_id"),

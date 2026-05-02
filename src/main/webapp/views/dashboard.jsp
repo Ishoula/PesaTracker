@@ -247,6 +247,16 @@
                                     </td>
                                     <td class="py-5 text-center">
                                         <span class="text-xs text-gray-300 bg-white/5 px-3 py-1 rounded-full">${exp.category.name}</span>
+                                        <c:if test="${not empty exp.tags}">
+                                            <div class="flex flex-wrap gap-1 justify-center mt-1">
+                                                <c:forEach var="tag" items="${exp.tags}">
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] border border-white/20 text-gray-300" style="background-color: ${tag.colorCode}20; border-color: ${tag.colorCode}40;">
+                                                        <span class="w-1 h-1 rounded-full" style="background-color: ${tag.colorCode};"></span>
+                                                        ${tag.name}
+                                                    </span>
+                                                </c:forEach>
+                                            </div>
+                                        </c:if>
                                     </td>
                                     <td class="py-5 text-center">
                                         <span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase
@@ -354,4 +364,4 @@
     </script>
 
 </body>
-</html>
+</html>
