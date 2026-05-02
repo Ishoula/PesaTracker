@@ -12,7 +12,7 @@ Pesa Tracker is a Java-based desktop application designed to help users efficien
 🏗️ Tech Stack
 Language: Java
 Database: PostgreSQL
-Visualization: JFreeChart
+Visualization: ChartJS
 
 🎯 Goal
 
