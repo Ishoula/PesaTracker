@@ -6,7 +6,6 @@ import repository.ExpenseRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ExpenseService {
@@ -18,7 +17,7 @@ public class ExpenseService {
     }
 
     public void addPersonalExpense(User user, Double amount, LocalDate date, String desc,
-                                   Category cat, Currency currency, Set<Tag> tags, String occasion) {
+                                   Category cat, Currency currency, String occasion) {
         PersonalExpense pe = new PersonalExpense();
         pe.setUser(user);
         pe.setAmount(amount);
@@ -26,15 +25,12 @@ public class ExpenseService {
         pe.setDescription(desc);
         pe.setCategory(cat);
         pe.setCurrency(currency);
-        if (tags != null) {
-            pe.setTags(tags);
-        }
         pe.setOccasion(occasion);
         expenseRepository.save(pe);
     }
 
     public void addBusinessExpense(User user, Double amount, LocalDate date, String desc,
-                                   Category cat, Currency currency, Set<Tag> tags,
+                                   Category cat, Currency currency,
                                    String comp, String taxId) {
         BusinessExpense be = new BusinessExpense();
         be.setUser(user);
@@ -43,9 +39,6 @@ public class ExpenseService {
         be.setDescription(desc);
         be.setCategory(cat);
         be.setCurrency(currency);
-        if (tags != null) {
-            be.setTags(tags);
-        }
         be.setCompanyName(comp);
         be.setTaxId(taxId);
         expenseRepository.save(be);

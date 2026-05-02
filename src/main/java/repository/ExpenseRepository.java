@@ -8,7 +8,6 @@ import util.HibernateUtil;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 public class ExpenseRepository {
 
@@ -16,24 +15,11 @@ public class ExpenseRepository {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            // Debug: log tags being saved
-            System.out.println("DEBUG: Saving expense with " + (expense.getTags() != null ? expense.getTags().size() : 0) + " tags");
-            // Merge detached tags to attach them to current session
-            if (expense.getTags() != null && !expense.getTags().isEmpty()) {
-                Set<Tag> mergedTags = new java.util.HashSet<>();
-                for (Tag tag : expense.getTags()) {
-                    System.out.println("DEBUG: Merging tag id=" + tag.getId() + ", name=" + tag.getName());
-                    mergedTags.add(session.merge(tag));
-                }
-                expense.setTags(mergedTags);
-            }
             session.persist(expense);
             transaction.commit();
-            System.out.println("DEBUG: Expense saved successfully with id=" + expense.getId());
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            System.err.println("ERROR saving expense: " + e.getMessage());
         }
     }
 
@@ -51,7 +37,7 @@ public class ExpenseRepository {
 
     public List<Expense> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category LEFT JOIN FETCH e.tags";
+            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category";
             return session.createQuery(hql, Expense.class)
                     .setCacheable(true)
                     .getResultList();
@@ -60,7 +46,7 @@ public class ExpenseRepository {
 
     public List<Expense> findByUserId(Long userId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category LEFT JOIN FETCH e.tags WHERE e.user.id = :userId ORDER BY e.date DESC";
+            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category WHERE e.user.id = :userId ORDER BY e.date DESC";
             return session.createQuery(hql, Expense.class)
                     .setParameter("userId", userId)
                     .getResultList();
@@ -69,7 +55,7 @@ public class ExpenseRepository {
 
     public List<Expense> findByUserIdAndDateRange(Long userId, LocalDate start, LocalDate end) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category LEFT JOIN FETCH e.tags WHERE e.user.id = :userId AND e.date >= :start AND e.date <= :end ORDER BY e.date DESC";
+            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category WHERE e.user.id = :userId AND e.date >= :start AND e.date <= :end ORDER BY e.date DESC";
             return session.createQuery(hql, Expense.class)
                     .setParameter("userId", userId)
                     .setParameter("start", start)
@@ -80,7 +66,7 @@ public class ExpenseRepository {
 
     public List<Expense> findByUserIdAndCategory(Long userId, Long categoryId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category LEFT JOIN FETCH e.tags WHERE e.user.id = :userId AND e.category.id = :catId ORDER BY e.date DESC";
+            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category WHERE e.user.id = :userId AND e.category.id = :catId ORDER BY e.date DESC";
             return session.createQuery(hql, Expense.class)
                     .setParameter("userId", userId)
                     .setParameter("catId", categoryId)
@@ -90,7 +76,7 @@ public class ExpenseRepository {
 
     public List<Expense> searchByUserIdAndKeyword(Long userId, String keyword) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category LEFT JOIN FETCH e.tags WHERE e.user.id = :userId AND (LOWER(e.description) LIKE :kw OR LOWER(e.category.name) LIKE :kw) ORDER BY e.date DESC";
+            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category WHERE e.user.id = :userId AND (LOWER(e.description) LIKE :kw OR LOWER(e.category.name) LIKE :kw) ORDER BY e.date DESC";
             return session.createQuery(hql, Expense.class)
                     .setParameter("userId", userId)
                     .setParameter("kw", "%" + keyword.toLowerCase() + "%")
@@ -100,7 +86,7 @@ public class ExpenseRepository {
 
     public List<Expense> findByUserIdAndAmountRange(Long userId, Double minAmount, Double maxAmount) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category LEFT JOIN FETCH e.tags WHERE e.user.id = :userId AND e.amount >= :min AND e.amount <= :max ORDER BY e.date DESC";
+            String hql = "SELECT DISTINCT e FROM Expense e JOIN FETCH e.category WHERE e.user.id = :userId AND e.amount >= :min AND e.amount <= :max ORDER BY e.date DESC";
             return session.createQuery(hql, Expense.class)
                     .setParameter("userId", userId)
                     .setParameter("min", minAmount)

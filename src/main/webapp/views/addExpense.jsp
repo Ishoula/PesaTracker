@@ -144,27 +144,6 @@
                 </datalist>
             </div>
 
-            <!-- TAGS -->
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Tags</label>
-                <div class="flex flex-wrap gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-                    <c:forEach var="tag" items="${tags}">
-                        <label class="cursor-pointer group">
-                            <input type="checkbox" name="tagIds" value="${tag.id}" class="hidden peer">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none
-                                bg-white/5 border-white/10 text-gray-400
-                                peer-checked:bg-white/10 peer-checked:border-yellow-400 peer-checked:text-yellow-400">
-                                <span class="w-2 h-2 rounded-full" style="background-color: ${tag.colorCode};"></span>
-                                ${tag.name}
-                            </span>
-                        </label>
-                    </c:forEach>
-                    <c:if test="${empty tags}">
-                        <span class="text-gray-500 text-sm">No tags yet. <a href="${pageContext.request.contextPath}/tags" class="text-yellow-400 hover:underline">Create some</a></span>
-                    </c:if>
-                </div>
-            </div>
-
             <!-- PERSONAL SPECIFIC -->
             <div id="personalFields" class="space-y-2 animate-up">
                 <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Occasion</label>

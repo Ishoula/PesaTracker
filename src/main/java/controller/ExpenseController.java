@@ -7,14 +7,11 @@ import models.*;
 import service.ExpenseService;
 import service.CategoryService;
 import service.CurrencyService;
-import service.TagService;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @WebServlet("/expenses/*")
@@ -23,14 +20,12 @@ public class ExpenseController extends HttpServlet {
     private ExpenseService expenseService;
     private CategoryService categoryService;
     private CurrencyService currencyService;
-    private TagService tagService;
 
     @Override
     public void init() {
         this.expenseService = new ExpenseService();
         this.categoryService = new CategoryService();
         this.currencyService = new CurrencyService();
-        this.tagService = new TagService();
     }
 
     @Override
@@ -91,7 +86,6 @@ public class ExpenseController extends HttpServlet {
 
     private void showAddForm(HttpServletRequest req, HttpServletResponse resp, User user) throws ServletException, IOException {
         req.setAttribute("categories", categoryService.getAllCategories());
-        req.setAttribute("tags", tagService.getTagsByUser(user.getId()));
         req.setAttribute("currencies", currencyService.getAllCurrencies());
         req.getRequestDispatcher("/views/addExpense.jsp").forward(req, resp);
     }
@@ -106,23 +100,14 @@ public class ExpenseController extends HttpServlet {
             Long currencyId = req.getParameter("currencyId") != null ? Long.parseLong(req.getParameter("currencyId")) : null;
             Currency currency = currencyId != null ? currencyService.getCurrencyById(currencyId) : currencyService.getDefaultCurrency();
 
-            String[] tagIds = req.getParameterValues("tagIds");
-            Set<Tag> tags = new HashSet<>();
-            if (tagIds != null) {
-                for (String tagId : tagIds) {
-                    Tag tag = tagService.getTagById(Long.parseLong(tagId));
-                    if (tag != null) tags.add(tag);
-                }
-            }
-
             String type = req.getParameter("expenseType");
             if ("BUSINESS".equalsIgnoreCase(type)) {
                 String company = req.getParameter("companyName");
                 String taxId = req.getParameter("taxId");
-                expenseService.addBusinessExpense(user, amount, date, desc, category, currency, tags, company, taxId);
+                expenseService.addBusinessExpense(user, amount, date, desc, category, currency, company, taxId);
             } else {
                 String occasion = req.getParameter("occasion");
-                expenseService.addPersonalExpense(user, amount, date, desc, category, currency, tags, occasion);
+                expenseService.addPersonalExpense(user, amount, date, desc, category, currency, occasion);
             }
 
             resp.sendRedirect(req.getContextPath() + "/expenses/dashboard?msg=saved");

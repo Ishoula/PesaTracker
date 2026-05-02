@@ -5,8 +5,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.HashSet;
 
 @Entity
 @Table(name = "expenses")
@@ -39,14 +37,6 @@ public abstract class Expense implements Serializable {
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinTable(
-        name = "expense_tags",
-        joinColumns = @JoinColumn(name = "expense_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> tags = new HashSet<>();
-
     // Constructors
     public Expense() {}
 
@@ -65,6 +55,4 @@ public abstract class Expense implements Serializable {
     public void setCategory(Category category) { this.category = category; }
     public Currency getCurrency() { return currency; }
     public void setCurrency(Currency currency) { this.currency = currency; }
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
 }
