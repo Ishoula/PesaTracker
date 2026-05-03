@@ -95,8 +95,22 @@
 
 <body class="text-gray-200 min-h-screen premium-gradient">
 
+    <!-- MOBILE TOP BAR -->
+    <div class="md:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div class="w-8 h-8 bg-yellow-400 rounded-xl flex items-center justify-center">
+            <i data-lucide="wallet" class="text-black w-4 h-4"></i>
+        </div>
+        <span class="text-white font-bold">PesaTracker</span>
+    </div>
+
+    <!-- SIDEBAR OVERLAY -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/60 z-40 md:hidden"></div>
+
     <!-- SIDEBAR -->
-    <aside class="fixed left-0 top-0 h-full w-64 bg-[#0a0a0a]/90 backdrop-blur-xl border-r border-white/5 p-6 z-50">
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 md:w-64 bg-[#0a0a0a]/95 backdrop-blur-xl border-r border-white/5 p-6 z-50 -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
         <div class="flex items-center gap-3 mb-12 px-2">
             <div class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(250,204,21,0.3)]">
                 <i data-lucide="wallet" class="text-black w-6 h-6"></i>
@@ -110,9 +124,6 @@
             </a>
             <a href="<c:url value='/budget'/>" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white font-medium text-sm hover:bg-white/5">
                 <i data-lucide="target" class="w-4 h-4"></i>Budgets
-            </a>
-            <a href="<c:url value='/tags'/>" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white font-medium text-sm hover:bg-white/5">
-                <i data-lucide="tag" class="w-4 h-4"></i>Tags
             </a>
             <a href="<c:url value='/recurring'/>" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white font-medium text-sm hover:bg-white/5">
                 <i data-lucide="repeat" class="w-4 h-4"></i>Recurring
@@ -144,12 +155,12 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="ml-64 p-8 lg:p-12">
+    <main class="md:ml-64 p-4 pt-20 md:pt-8 lg:p-12">
         
         <!-- HEADER -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 animate-in">
             <div>
-                <h1 class="text-4xl font-bold text-white tracking-tight">Overview</h1>
+                <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight">Overview</h1>
                 <p class="text-gray-400 mt-2 font-light">Welcome back, <span class="text-yellow-400 font-medium">${sessionScope.user.username}</span>. Here's your financial summary.</p>
             </div>
 
@@ -171,7 +182,7 @@
                     <span class="text-[10px] font-bold text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full uppercase">Monthly</span>
                 </div>
                 <p class="text-gray-400 text-sm font-medium">Total Expenditure</p>
-                <h2 class="text-3xl font-bold text-white mt-2 tracking-tight">
+                <h2 class="text-xl md:text-3xl font-bold text-white mt-2 tracking-tight">
                     <fmt:formatNumber value="${totalSpending}" type="currency" currencySymbol="$"/>
                 </h2>
                 <div class="mt-4 flex items-center gap-2 text-xs text-gray-500">
@@ -187,7 +198,7 @@
                     </div>
                 </div>
                 <p class="text-gray-400 text-sm font-medium">Transactions</p>
-                <h2 class="text-3xl font-bold text-white mt-2 tracking-tight">${expenses.size()}</h2>
+                <h2 class="text-xl md:text-3xl font-bold text-white mt-2 tracking-tight">${expenses.size()}</h2>
                 <div class="mt-4 flex items-center gap-2 text-xs text-gray-500">
                     <i data-lucide="check-circle-2" class="w-3 h-3 text-gray-300"></i>
                     All transactions synced
@@ -201,7 +212,7 @@
                     </div>
                 </div>
                 <p class="text-gray-400 text-sm font-medium">Categories Used</p>
-                <h2 class="text-3xl font-bold text-white mt-2 tracking-tight">${chartData.size()}</h2>
+                <h2 class="text-xl md:text-3xl font-bold text-white mt-2 tracking-tight">${chartData.size()}</h2>
                 <div class="mt-4 flex items-center gap-2 text-xs text-gray-500">
                     <i data-lucide="info" class="w-3 h-3 text-yellow-600"></i>
                     Diversified spending
@@ -217,7 +228,7 @@
             <div class="lg:col-span-2 glass-card p-8 rounded-3xl animate-in" style="animation-delay: 0.4s">
                 
                 <div class="flex justify-between items-center mb-8">
-                    <h3 class="text-xl font-bold text-white tracking-tight">Recent Transactions</h3>
+                    <h3 class="text-lg md:text-xl font-bold text-white tracking-tight">Recent Transactions</h3>
                     <button class="text-yellow-400 text-sm font-medium hover:underline">View All</button>
                 </div>
 
@@ -271,7 +282,7 @@
             <!-- SPENDING CHART -->
             <div class="glass-card p-8 rounded-3xl flex flex-col animate-in" style="animation-delay: 0.5s">
                 <div class="mb-8">
-                    <h3 class="text-xl font-bold text-white tracking-tight">Analytics</h3>
+                    <h3 class="text-lg md:text-xl font-bold text-white tracking-tight">Analytics</h3>
                     <p class="text-xs text-gray-500 mt-1">Spending by Category</p>
                 </div>
 
@@ -300,8 +311,11 @@
 
     <!-- CHART SCRIPT -->
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
 
         // Chart Data
         const chartLabels = [];

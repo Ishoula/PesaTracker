@@ -88,8 +88,22 @@
 
 <body class="text-gray-200 min-h-screen premium-gradient">
 
+    <!-- MOBILE TOP BAR -->
+    <div class="md:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div class="w-8 h-8 bg-yellow-400 rounded-xl flex items-center justify-center">
+            <i data-lucide="wallet" class="text-black w-4 h-4"></i>
+        </div>
+        <span class="text-white font-bold">PesaTracker</span>
+    </div>
+
+    <!-- SIDEBAR OVERLAY -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/60 z-40 md:hidden"></div>
+
     <!-- SIDEBAR -->
-    <aside class="fixed left-0 top-0 h-full w-64 bg-[#0a0a0a]/90 backdrop-blur-xl border-r border-white/5 p-6 z-50">
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 md:w-64 bg-[#0a0a0a]/95 backdrop-blur-xl border-r border-white/5 p-6 z-50 -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
         <div class="flex items-center gap-3 mb-12 px-2">
             <div class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(250,204,21,0.3)]">
                 <i data-lucide="wallet" class="text-black w-6 h-6"></i>
@@ -103,9 +117,6 @@
             </a>
             <a href="<c:url value='/budget'/>" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white font-medium text-sm hover:bg-white/5">
                 <i data-lucide="target" class="w-4 h-4"></i>Budgets
-            </a>
-            <a href="<c:url value='/tags'/>" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white font-medium text-sm hover:bg-white/5">
-                <i data-lucide="tag" class="w-4 h-4"></i>Tags
             </a>
             <a href="<c:url value='/recurring'/>" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white font-medium text-sm hover:bg-white/5">
                 <i data-lucide="repeat" class="w-4 h-4"></i>Recurring
@@ -137,12 +148,12 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="ml-64 p-8 lg:p-12">
+    <main class="md:ml-64 p-4 pt-20 md:pt-8 lg:p-12">
         
         <!-- HEADER -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 animate-in">
             <div>
-                <h1 class="text-4xl font-bold text-white tracking-tight">Smart Insights</h1>
+                <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight">Smart Insights</h1>
                 <p class="text-gray-400 mt-2 font-light">AI-driven analysis of your spending patterns to help you save.</p>
             </div>
         </div>
@@ -157,7 +168,7 @@
                     </div>
                 </div>
                 <p class="text-gray-400 text-sm font-medium">Month-over-Month Trend</p>
-                <h2 class="text-3xl font-bold text-white mt-2 tracking-tight">
+                <h2 class="text-xl md:text-3xl font-bold text-white mt-2 tracking-tight">
                     <c:choose>
                         <c:when test="${insights.trendPercentage > 0}">
                             <span class="text-red-500">+<fmt:formatNumber value="${insights.trendPercentage}" pattern="#,##0.0"/>%</span>
@@ -183,7 +194,7 @@
                     </div>
                 </div>
                 <p class="text-gray-400 text-sm font-medium">Highest Spending Category</p>
-                <h2 class="text-3xl font-bold text-white mt-2 tracking-tight">${insights.highestCategory}</h2>
+                <h2 class="text-xl md:text-3xl font-bold text-white mt-2 tracking-tight">${insights.highestCategory}</h2>
                 <div class="mt-4 text-xs text-gray-500 font-bold text-yellow-400">
                     <fmt:formatNumber value="${insights.highestAmount}" type="currency" currencySymbol="$"/>
                 </div>
@@ -197,7 +208,7 @@
                     </div>
                 </div>
                 <p class="text-gray-400 text-sm font-medium">Actionable Suggestions</p>
-                <h2 class="text-3xl font-bold text-white mt-2 tracking-tight">${insights.suggestions.size()}</h2>
+                <h2 class="text-xl md:text-3xl font-bold text-white mt-2 tracking-tight">${insights.suggestions.size()}</h2>
                 <div class="mt-4 text-xs text-gray-500">
                     Suggestions to review below
                 </div>
@@ -207,7 +218,7 @@
 
         <!-- SUGGESTIONS LIST -->
         <div class="glass-card p-8 rounded-3xl animate-in" style="animation-delay: 0.4s">
-            <h3 class="text-xl font-bold text-white tracking-tight mb-6">Your Personalized Insights</h3>
+            <h3 class="text-lg md:text-xl font-bold text-white tracking-tight mb-6">Your Personalized Insights</h3>
             
             <div class="space-y-4">
                 <c:forEach var="suggestion" items="${insights.suggestions}">
@@ -227,6 +238,10 @@
 
     <script>
         lucide.createIcons();
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
     </script>
 </body>
 </html>
